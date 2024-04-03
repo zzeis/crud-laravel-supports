@@ -10,16 +10,15 @@
 </head>
 
 <body>
-    <section class="container px-4 mx-auto">
-    <head>
+    <section class="container px-4 mx-auto py-4">
+   
         @yield('header')
-    </head>
+   
     <div class="content">
+        <x-messages/>
         @yield('content')
     </div>
-    <footer>
-        #default footer
-    </footer>
+   
     </section>
 </body>
 
