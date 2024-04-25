@@ -26,7 +26,8 @@ class SupportController extends Controller
             filter: $request->filter,
         );
         $filters = ['filter' => $request->get('filter','')];
-      
+        
+        
         return view('Admin/supports/index', compact('supports','filters'));
     }
 

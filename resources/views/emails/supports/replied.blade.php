@@ -1,0 +1,1 @@
+Seu suporte foi respondido.
