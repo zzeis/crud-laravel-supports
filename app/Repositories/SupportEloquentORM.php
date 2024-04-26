@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\DTO\Supports\CreateSupportDTO;
 use App\DTO\Supports\UpdateSupportDTO;
+use App\Enums\SupportStatus;
 use App\Models\Support;
 use App\Repositories\Contracts\PaginationInterface;
 use App\Repositories\Contracts\SupportRepositoryInterface;
@@ -21,14 +22,22 @@ class SupportEloquentORM implements SupportRepositoryInterface
 
     public function paginate(int $page = 1, int $totalPerPage = 15, string $filter = null): PaginationInterface
     {
-        $result = $this->model
+        // $result = $this->model
+        //     ->with(['replies' => function ($query) {
+        //         $query->limit(4);
+        //         $query->latest();
+        //     }])
+            $result = $this-> model
+            ->with('replies.user')
             ->where(function ($query) use ($filter) {
                 if ($filter) {
                     $query->where('subject', $filter);
                     $query->orWhere('body', 'like', "{$filter}");
                 }
             })
+
             ->paginate($totalPerPage, ['*'], 'page', $page);
+
 
         return new PaginationPresenter($result);
     }
@@ -59,7 +68,7 @@ class SupportEloquentORM implements SupportRepositoryInterface
         if (Gate::denies('owner', $support->user->id)) {
             abort(403, 'Not authorized');
         }
-        
+
         $support->delete();
     }
     public function new(CreateSupportDTO $dto): stdClass
@@ -85,5 +94,14 @@ class SupportEloquentORM implements SupportRepositoryInterface
         );
 
         return (object) $support->toArray();
+    }
+
+    public function updateStatus(string $id, SupportStatus $status): void
+    {
+        $this->model
+            ->where('id', $id)
+            ->update([
+                'status' => $status->name
+            ]);
     }
 }
