@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,6 +30,14 @@ class ReplySupport extends Model
     }
 
 
+    protected $with = ['user'];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->latest();
+        });
+    }
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
